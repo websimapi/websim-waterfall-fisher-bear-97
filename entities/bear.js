@@ -77,7 +77,7 @@ export function createBear(type = 'splashy') {
     group.userData.wobbleTimer = 0;
     group.userData.zTarget = group.position.z; // init Z roll target
     group.userData.eyes = [eyeL, eyeR];
-    group.userData.blink = { in:false, t:0, phase:'idle', dur:0.18, cooldown: 4 + Math.random()*4, count:0, target:1, gapDur: 0.22 };
+    group.userData.blink = { in:false, t:0, phase:'idle', dur:0.18, cooldown: 6 + Math.random()*8, count:0, target:1, gapDur: 0.22 };
 
     // add simple translucent net in front of the log
     const netWidth = 2.8;
@@ -145,6 +145,6 @@ export function tickBearBlink(b, dt = 1/60) {
         const y = st.phase==='close' ? (1 - p) : p;
         const scaleY = Math.max(0.08, THREE.MathUtils.lerp(1, 0.05, 1 - y));
         b.userData.eyes.forEach(e => { e.scale.y = scaleY; });
-        if (p >= 1) { st.t = 0; if (st.phase==='close') st.phase='open'; else { st.count++; if (st.count < st.target) { st.phase='gap'; } else { st.in=false; st.phase='idle'; st.cooldown = 4 + Math.random()*4; b.userData.eyes.forEach(e=>{ e.scale.y = 1; }); } } }
+        if (p >= 1) { st.t = 0; if (st.phase==='close') st.phase='open'; else { st.count++; if (st.count < st.target) { st.phase='gap'; } else { st.in=false; st.phase='idle'; st.cooldown = 6 + Math.random()*8; b.userData.eyes.forEach(e=>{ e.scale.y = 1; }); } } }
     }
 }
