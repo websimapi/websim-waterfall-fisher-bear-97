@@ -42,8 +42,8 @@ export function createBear(type = 'splashy') {
     group.add(createVoxel(-0.42, 1.72, -0.08, 0.36, 0.36, 0.28, earMat));
     group.add(createVoxel( 0.42, 1.72, -0.08, 0.36, 0.36, 0.28, earMat));
     // eyes: make clearly visible and a bit higher/wider
-    group.add(createVoxel(-0.35, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat));
-    group.add(createVoxel( 0.35, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat));
+    const eyeL = createVoxel(-0.35, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat); eyeL.name = 'eyeL'; group.add(eyeL);
+    const eyeR = createVoxel( 0.35, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat); eyeR.name = 'eyeR'; group.add(eyeR);
     // snout: just a bit lighter than body (for splashy) and slightly deeper
     group.add(createVoxel(0, 1.20, 0.62, 0.54, 0.36, 0.36, muzzleMat));
     // nose: move up to top of snout and make it stick out more
@@ -76,7 +76,9 @@ export function createBear(type = 'splashy') {
     group.userData.targetX = 0;
     group.userData.wobbleTimer = 0;
     group.userData.zTarget = group.position.z; // init Z roll target
-    
+    group.userData.eyes = [eyeL, eyeR];
+    group.userData.blink = { in:false, t:0, phase:'idle', dur:0.12, cooldown: 2 + Math.random()*3, count:0, target:1 };
+
     // add simple translucent net in front of the log
     const netWidth = 2.8;
     const netMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
@@ -116,6 +118,7 @@ export function updateBear(bear, moveDirection) {
     } else {
         bear.rotation.z = THREE.MathUtils.lerp(bear.rotation.z, 0, 0.1);
     }
+    tickBearBlink(bear);
 }
 
 export function getHandAnchor(bearGroup, side = 'right') {
@@ -128,4 +131,19 @@ export function nudgeBearZ(bearGroup, delta) {
     if (!bearGroup) return;
     const next = (bearGroup.userData.zTarget ?? bearGroup.position.z) + delta;
     bearGroup.userData.zTarget = THREE.MathUtils.clamp(next, BEAR_Z_MIN, BEAR_Z_MAX);
+}
+
+export function tickBearBlink(b, dt = 1/60) {
+    if (!b?.userData?.eyes?.length) return;
+    const st = b.userData.blink;
+    if (!st) return;
+    if (!st.in) { st.cooldown -= dt; if (st.cooldown <= 0) { st.in = true; st.phase='close'; st.t=0; st.target = Math.random()<0.25 ? 2 : 1; st.count=0; } }
+    else {
+        st.t += dt;
+        const p = Math.min(1, st.t / st.dur);
+        const y = st.phase==='close' ? (1 - p) : p;
+        const scaleY = Math.max(0.08, THREE.MathUtils.lerp(1, 0.05, 1 - y));
+        b.userData.eyes.forEach(e => { e.scale.y = scaleY; });
+        if (p >= 1) { st.t = 0; if (st.phase==='close') st.phase='open'; else { st.count++; if (st.count < st.target) { st.phase='close'; } else { st.in=false; st.phase='idle'; st.cooldown = 2 + Math.random()*3; b.userData.eyes.forEach(e=>{ e.scale.y = 1; }); } } }
+    }
 }
