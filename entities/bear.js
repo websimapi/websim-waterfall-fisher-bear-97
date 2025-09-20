@@ -42,8 +42,8 @@ export function createBear(type = 'splashy') {
     group.add(createVoxel(-0.42, 1.72, -0.08, 0.36, 0.36, 0.28, earMat));
     group.add(createVoxel( 0.42, 1.72, -0.08, 0.36, 0.36, 0.28, earMat));
     // eyes: make clearly visible and a bit higher/wider
-    const eyeL = createVoxel(-0.35, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat); eyeL.name = 'eyeL'; group.add(eyeL);
-    const eyeR = createVoxel( 0.35, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat); eyeR.name = 'eyeR'; group.add(eyeR);
+    const eyeL = createVoxel(-0.28, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat); eyeL.name = 'eyeL'; group.add(eyeL);
+    const eyeR = createVoxel( 0.28, 1.65, 0.50, 0.18, 0.18, 0.08, eyeBlackMat); eyeR.name = 'eyeR'; group.add(eyeR);
     // snout: just a bit lighter than body (for splashy) and slightly deeper
     group.add(createVoxel(0, 1.20, 0.62, 0.54, 0.36, 0.36, muzzleMat));
     // nose: move up to top of snout and make it stick out more
